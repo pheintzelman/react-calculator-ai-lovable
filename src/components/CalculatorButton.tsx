@@ -20,12 +20,10 @@ const CalculatorButton: React.FC<CalculatorButtonProps> = ({
   icon
 }) => {
   const buttonClasses = cn(
-    "flex items-center justify-center text-white font-semibold text-2xl rounded-lg p-4 transition-all active:animate-button-press",
+    "flex items-center justify-center font-medium text-2xl py-5 bg-gray-100 hover:bg-gray-200 transition-colors border-none",
     {
-      "bg-calculator-numbers hover:bg-gray-600": type === 'number' || type === 'decimal',
-      "bg-calculator-operations hover:bg-amber-500": type === 'operation',
-      "bg-calculator-equals hover:bg-blue-500": type === 'equals',
-      "bg-calculator-clear hover:bg-red-500": type === 'clear' || type === 'backspace',
+      "text-gray-800": type === 'number' || type === 'decimal' || type === 'clear',
+      "text-gray-800": type === 'operation' || type === 'equals',
     },
     className
   );

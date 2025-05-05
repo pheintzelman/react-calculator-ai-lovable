@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import CalculatorButton from './CalculatorButton';
-import { Plus, Minus, X, Divide, Equal, ArrowLeft, CircleDot } from 'lucide-react';
+import { Plus, Minus, X, Divide, Equal, CircleDot } from 'lucide-react';
 
 const Calculator: React.FC = () => {
   const [display, setDisplay] = useState('0');
@@ -96,42 +96,34 @@ const Calculator: React.FC = () => {
     setResetDisplay(false);
   };
 
-  const handleBackspace = () => {
-    if (display === '0' || display === 'Error' || resetDisplay) {
-      return;
-    }
-    
-    if (display.length === 1) {
-      setDisplay('0');
-    } else {
-      setDisplay(display.slice(0, -1));
-    }
-  };
-
-  // Rearranged the buttons to have operations on the right column
+  // Updated buttons layout to match the image
   const buttons = [
-    { value: 'C', type: 'clear' as const, onClick: handleClear },
-    { value: '←', type: 'backspace' as const, onClick: handleBackspace, icon: <ArrowLeft size={24} /> },
+    // First row - Clear button takes full width
+    { value: 'Clear', type: 'clear' as const, onClick: handleClear, className: 'col-span-4' },
+    
+    // Second row
     { value: '7', type: 'number' as const, onClick: () => appendValue('7') },
-    { value: '÷', type: 'operation' as const, onClick: () => handleOperation('÷'), icon: <Divide size={24} /> },
-
     { value: '8', type: 'number' as const, onClick: () => appendValue('8') },
     { value: '9', type: 'number' as const, onClick: () => appendValue('9') },
+    { value: '÷', type: 'operation' as const, onClick: () => handleOperation('÷'), icon: <Divide size={24} /> },
+    
+    // Third row
     { value: '4', type: 'number' as const, onClick: () => appendValue('4') },
-    { value: '×', type: 'operation' as const, onClick: () => handleOperation('×'), icon: <X size={24} /> },
-
     { value: '5', type: 'number' as const, onClick: () => appendValue('5') },
     { value: '6', type: 'number' as const, onClick: () => appendValue('6') },
+    { value: '×', type: 'operation' as const, onClick: () => handleOperation('×'), icon: <X size={24} /> },
+    
+    // Fourth row
     { value: '1', type: 'number' as const, onClick: () => appendValue('1') },
-    { value: '-', type: 'operation' as const, onClick: () => handleOperation('-'), icon: <Minus size={24} /> },
-
     { value: '2', type: 'number' as const, onClick: () => appendValue('2') },
     { value: '3', type: 'number' as const, onClick: () => appendValue('3') },
+    { value: '-', type: 'operation' as const, onClick: () => handleOperation('-'), icon: <Minus size={24} /> },
+    
+    // Fifth row
     { value: '0', type: 'number' as const, onClick: () => appendValue('0') },
+    { value: '.', type: 'decimal' as const, onClick: appendDecimal, icon: <CircleDot size={18} /> },
+    { value: '=', type: 'equals' as const, onClick: handleEquals, icon: <Equal size={24} /> },
     { value: '+', type: 'operation' as const, onClick: () => handleOperation('+'), icon: <Plus size={24} /> },
-
-    { value: '.', type: 'decimal' as const, onClick: appendDecimal, icon: <CircleDot size={18} />, className: 'col-span-2' },
-    { value: '=', type: 'equals' as const, onClick: handleEquals, icon: <Equal size={24} />, className: 'col-span-2' },
   ];
 
   // Format the display for better readability
@@ -143,19 +135,16 @@ const Calculator: React.FC = () => {
       }).format(Number(display) || 0);
 
   return (
-    <div className="bg-gray-800 rounded-xl shadow-2xl overflow-hidden max-w-md w-full mx-auto">
+    <div className="bg-gray-100 rounded-lg shadow-lg overflow-hidden max-w-xs w-full mx-auto border border-gray-300">
       {/* Calculator Display */}
-      <div className="bg-calculator-display p-6 text-right">
-        <div className="text-gray-400 h-6 text-lg">
-          {prevValue && `${prevValue} ${currentOperation}`}
-        </div>
-        <div className="text-white text-4xl font-bold truncate h-12">
+      <div className="bg-gray-500 p-4 text-right h-20 flex items-center justify-end">
+        <div className="text-white text-3xl font-medium truncate">
           {displayValue}
         </div>
       </div>
       
       {/* Calculator Buttons */}
-      <div className="grid grid-cols-4 gap-2 p-4 bg-gray-900">
+      <div className="grid grid-cols-4 gap-px bg-gray-300">
         {buttons.map((button, index) => (
           <CalculatorButton
             key={index}
