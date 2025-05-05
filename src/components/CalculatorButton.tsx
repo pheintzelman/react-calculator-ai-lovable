@@ -23,7 +23,7 @@ const CalculatorButton: React.FC<CalculatorButtonProps> = ({
     "flex items-center justify-center font-medium text-2xl py-5 bg-gray-100 hover:bg-gray-200 transition-colors border-none",
     {
       "text-gray-800": type === 'number' || type === 'decimal' || type === 'clear',
-      "text-gray-800": type === 'operation' || type === 'equals',
+      "text-blue-600": type === 'operation' || type === 'equals',
     },
     className
   );

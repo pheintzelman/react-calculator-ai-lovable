@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import CalculatorButton from './CalculatorButton';
 import { Plus, Minus, X, Divide, Equal, CircleDot } from 'lucide-react';
@@ -7,6 +8,7 @@ const Calculator: React.FC = () => {
   const [prevValue, setPrevValue] = useState<string | null>(null);
   const [currentOperation, setCurrentOperation] = useState<string | null>(null);
   const [resetDisplay, setResetDisplay] = useState(false);
+  const [lastResult, setLastResult] = useState<string | null>(null);
 
   const appendValue = (value: string) => {
     if (display === '0' || resetDisplay) {
@@ -30,11 +32,17 @@ const Calculator: React.FC = () => {
   };
 
   const handleOperation = (operation: string) => {
+    // If we have a pending operation, perform it first
     if (prevValue && currentOperation && !resetDisplay) {
       performCalculation();
+      // The result is now in display and lastResult
+      setPrevValue(display);
+    } else {
+      // If no pending operation, use the current display value
+      setPrevValue(display);
+      setLastResult(display);
     }
     
-    setPrevValue(display);
     setCurrentOperation(operation);
     setResetDisplay(true);
   };
@@ -78,7 +86,8 @@ const Calculator: React.FC = () => {
         : result.toString();
     
     setDisplay(formattedResult);
-    setPrevValue(null);
+    setLastResult(formattedResult);
+    setPrevValue(formattedResult); // Store result as previous value for chaining
     setCurrentOperation(null);
     setResetDisplay(true);
   };
@@ -93,6 +102,7 @@ const Calculator: React.FC = () => {
     setDisplay('0');
     setPrevValue(null);
     setCurrentOperation(null);
+    setLastResult(null);
     setResetDisplay(false);
   };
 
