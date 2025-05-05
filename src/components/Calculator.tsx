@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import CalculatorButton from './CalculatorButton';
 import { Plus, Minus, X, Divide, Equal, ArrowLeft, CircleDot } from 'lucide-react';
@@ -109,29 +108,29 @@ const Calculator: React.FC = () => {
     }
   };
 
-  // Define the grid layout for our calculator
+  // Rearranged the buttons to have operations on the right column
   const buttons = [
     { value: 'C', type: 'clear' as const, onClick: handleClear },
     { value: '←', type: 'backspace' as const, onClick: handleBackspace, icon: <ArrowLeft size={24} /> },
+    { value: '7', type: 'number' as const, onClick: () => appendValue('7') },
     { value: '÷', type: 'operation' as const, onClick: () => handleOperation('÷'), icon: <Divide size={24} /> },
 
-    { value: '7', type: 'number' as const, onClick: () => appendValue('7') },
     { value: '8', type: 'number' as const, onClick: () => appendValue('8') },
     { value: '9', type: 'number' as const, onClick: () => appendValue('9') },
+    { value: '4', type: 'number' as const, onClick: () => appendValue('4') },
     { value: '×', type: 'operation' as const, onClick: () => handleOperation('×'), icon: <X size={24} /> },
 
-    { value: '4', type: 'number' as const, onClick: () => appendValue('4') },
     { value: '5', type: 'number' as const, onClick: () => appendValue('5') },
     { value: '6', type: 'number' as const, onClick: () => appendValue('6') },
+    { value: '1', type: 'number' as const, onClick: () => appendValue('1') },
     { value: '-', type: 'operation' as const, onClick: () => handleOperation('-'), icon: <Minus size={24} /> },
 
-    { value: '1', type: 'number' as const, onClick: () => appendValue('1') },
     { value: '2', type: 'number' as const, onClick: () => appendValue('2') },
     { value: '3', type: 'number' as const, onClick: () => appendValue('3') },
+    { value: '0', type: 'number' as const, onClick: () => appendValue('0') },
     { value: '+', type: 'operation' as const, onClick: () => handleOperation('+'), icon: <Plus size={24} /> },
 
-    { value: '0', type: 'number' as const, onClick: () => appendValue('0'), className: 'col-span-1' },
-    { value: '.', type: 'decimal' as const, onClick: appendDecimal, icon: <CircleDot size={18} /> },
+    { value: '.', type: 'decimal' as const, onClick: appendDecimal, icon: <CircleDot size={18} />, className: 'col-span-2' },
     { value: '=', type: 'equals' as const, onClick: handleEquals, icon: <Equal size={24} />, className: 'col-span-2' },
   ];
 
