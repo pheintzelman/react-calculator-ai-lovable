@@ -9,6 +9,7 @@ const Calculator: React.FC = () => {
   const [currentOperation, setCurrentOperation] = useState<string | null>(null);
   const [resetDisplay, setResetDisplay] = useState(false);
   const [lastResult, setLastResult] = useState<string | null>(null);
+  const [operationHistory, setOperationHistory] = useState<string>('');
 
   const appendValue = (value: string) => {
     if (display === '0' || resetDisplay) {
@@ -34,6 +35,8 @@ const Calculator: React.FC = () => {
   const handleOperation = (operation: string) => {
     // If we have a pending operation, perform it first
     if (prevValue && currentOperation && !resetDisplay) {
+      // Update operation history before calculating
+      setOperationHistory(operationHistory + display + getOperationSymbol(operation));
       performCalculation();
       // The result is now in display and lastResult
       setPrevValue(display);
@@ -41,10 +44,21 @@ const Calculator: React.FC = () => {
       // If no pending operation, use the current display value
       setPrevValue(display);
       setLastResult(display);
+      setOperationHistory(display + getOperationSymbol(operation));
     }
     
     setCurrentOperation(operation);
     setResetDisplay(true);
+  };
+
+  const getOperationSymbol = (op: string): string => {
+    switch(op) {
+      case '+': return ' + ';
+      case '-': return ' - ';
+      case '×': return ' × ';
+      case '÷': return ' ÷ ';
+      default: return ' ';
+    }
   };
 
   const performCalculation = () => {
@@ -94,6 +108,8 @@ const Calculator: React.FC = () => {
 
   const handleEquals = () => {
     if (prevValue && currentOperation) {
+      // Update operation history to show the complete calculation
+      setOperationHistory(operationHistory + display + ' =');
       performCalculation();
     }
   };
@@ -103,6 +119,7 @@ const Calculator: React.FC = () => {
     setPrevValue(null);
     setCurrentOperation(null);
     setLastResult(null);
+    setOperationHistory('');
     setResetDisplay(false);
   };
 
@@ -147,7 +164,12 @@ const Calculator: React.FC = () => {
   return (
     <div className="bg-gray-100 rounded-lg shadow-lg overflow-hidden max-w-xs w-full mx-auto border border-gray-300">
       {/* Calculator Display */}
-      <div className="bg-gray-500 p-4 text-right h-20 flex items-center justify-end">
+      <div className="bg-gray-500 p-4 text-right h-24 flex flex-col justify-end">
+        {/* History display */}
+        <div className="text-gray-300 text-sm font-medium truncate mb-1 h-5">
+          {operationHistory}
+        </div>
+        {/* Current result display */}
         <div className="text-white text-3xl font-medium truncate">
           {displayValue}
         </div>
