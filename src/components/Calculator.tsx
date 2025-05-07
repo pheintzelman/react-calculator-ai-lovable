@@ -10,11 +10,13 @@ const Calculator: React.FC = () => {
   const [resetDisplay, setResetDisplay] = useState(false);
   const [lastResult, setLastResult] = useState<string | null>(null);
   const [operationHistory, setOperationHistory] = useState<string>('');
+  const [waitingForNextInput, setWaitingForNextInput] = useState(false);
 
   const appendValue = (value: string) => {
-    if (display === '0' || resetDisplay) {
+    if (resetDisplay || display === '0') {
       setDisplay(value);
       setResetDisplay(false);
+      setWaitingForNextInput(false);
     } else if (display.length < 12) { // Limit the display length
       setDisplay(display + value);
     }
@@ -24,6 +26,7 @@ const Calculator: React.FC = () => {
     if (resetDisplay) {
       setDisplay('0.');
       setResetDisplay(false);
+      setWaitingForNextInput(false);
       return;
     }
     
@@ -34,12 +37,17 @@ const Calculator: React.FC = () => {
 
   const handleOperation = (operation: string) => {
     // If we have a pending operation, perform it first
-    if (prevValue && currentOperation && !resetDisplay) {
-      // Update operation history before calculating
+    if (prevValue && currentOperation && !waitingForNextInput) {
+      // Update operation history
       setOperationHistory(operationHistory + display + getOperationSymbol(operation));
-      performCalculation();
-      // The result is now in display and lastResult
-      setPrevValue(display);
+      
+      // Perform the pending calculation first
+      const result = performCalculation();
+      
+      // Store the result as previous value for next calculation
+      setPrevValue(result);
+      setDisplay(result);
+      setLastResult(result);
     } else {
       // If no pending operation, use the current display value
       setPrevValue(display);
@@ -49,6 +57,7 @@ const Calculator: React.FC = () => {
     
     setCurrentOperation(operation);
     setResetDisplay(true);
+    setWaitingForNextInput(true);
   };
 
   const getOperationSymbol = (op: string): string => {
@@ -61,8 +70,8 @@ const Calculator: React.FC = () => {
     }
   };
 
-  const performCalculation = () => {
-    if (!prevValue || !currentOperation) return;
+  const performCalculation = (): string => {
+    if (!prevValue || !currentOperation) return display;
 
     const prev = parseFloat(prevValue);
     const current = parseFloat(display);
@@ -84,12 +93,13 @@ const Calculator: React.FC = () => {
           setPrevValue(null);
           setCurrentOperation(null);
           setResetDisplay(true);
-          return;
+          setWaitingForNextInput(true);
+          return 'Error';
         }
         result = prev / current;
         break;
       default:
-        return;
+        return display;
     }
 
     // Format the result to avoid extremely long numbers
@@ -99,18 +109,24 @@ const Calculator: React.FC = () => {
         ? result.toExponential(6) 
         : result.toString();
     
-    setDisplay(formattedResult);
-    setLastResult(formattedResult);
-    setPrevValue(formattedResult); // Store result as previous value for chaining
-    setCurrentOperation(null);
-    setResetDisplay(true);
+    return formattedResult;
   };
 
   const handleEquals = () => {
     if (prevValue && currentOperation) {
       // Update operation history to show the complete calculation
       setOperationHistory(operationHistory + display + ' =');
-      performCalculation();
+      
+      // Perform the calculation and update display
+      const result = performCalculation();
+      setDisplay(result);
+      setLastResult(result);
+      
+      // Reset calculation state
+      setPrevValue(null);
+      setCurrentOperation(null);
+      setResetDisplay(true);
+      setWaitingForNextInput(true);
     }
   };
 
@@ -121,6 +137,7 @@ const Calculator: React.FC = () => {
     setLastResult(null);
     setOperationHistory('');
     setResetDisplay(false);
+    setWaitingForNextInput(false);
   };
 
   // Updated buttons layout to match the image
