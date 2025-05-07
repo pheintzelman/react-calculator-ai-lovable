@@ -24,7 +24,7 @@ const CalculatorButton: React.FC<CalculatorButtonProps> = ({
     {
       "text-gray-800": type === 'number' || type === 'decimal',
       "text-blue-600": type === 'operation' || type === 'equals',
-      "text-red-600": type === 'clear',
+      "text-pink-400": type === 'clear', // Changed from "text-red-600" to a softer pink
       "text-green-600": type === 'undo',
     },
     className

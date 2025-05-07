@@ -202,3 +202,4 @@ describe('Calculator Component', () => {
     fireEvent.click(screen.getByLabelText('='));
     expect(screen.getByText('5')).toBeInTheDocument();
   });
+});

@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import CalculatorButton from './CalculatorButton';
-import { Plus, Minus, X, Divide, Equal, CircleDot, Undo2 } from 'lucide-react';
+import { Plus, Minus, X, Divide, Equal, Circle, Undo2 } from 'lucide-react';
 
 const Calculator: React.FC = () => {
   const [display, setDisplay] = useState('0');
@@ -18,6 +18,7 @@ const Calculator: React.FC = () => {
     operationHistory: string;
     lastResult: string | null;
   }[]>([]);
+  const [lastClearIndex, setLastClearIndex] = useState(0);
 
   const saveToHistory = () => {
     setHistory([
@@ -33,14 +34,15 @@ const Calculator: React.FC = () => {
   };
 
   const handleUndo = () => {
-    if (history.length > 0) {
-      const lastState = history[history.length - 1];
+    // Only go back to the last clear operation
+    if (history.length > lastClearIndex) {
+      const lastState = history[lastClearIndex];
       setDisplay(lastState.display);
       setPrevValue(lastState.prevValue);
       setCurrentOperation(lastState.currentOperation);
       setOperationHistory(lastState.operationHistory);
       setLastResult(lastState.lastResult);
-      setHistory(history.slice(0, -1));
+      setHistory(history.slice(0, lastClearIndex));
     }
   };
 
@@ -97,7 +99,7 @@ const Calculator: React.FC = () => {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [display, prevValue, currentOperation, resetDisplay, history]); // Include dependencies
+  }, [display, prevValue, currentOperation, resetDisplay, history, lastClearIndex]); // Include all dependencies
 
   const appendValue = (value: string) => {
     if (resetDisplay || display === '0') {
@@ -161,6 +163,10 @@ const Calculator: React.FC = () => {
       setPrevValue(result);
       setDisplay(result);
       setLastResult(result);
+    } else if (waitingForNextInput && currentOperation) {
+      // If the user presses an operation key after another operation key,
+      // update the operation without changing the numbers
+      setOperationHistory(operationHistory.slice(0, -3) + getOperationSymbol(operation));
     } else {
       // If no pending operation, use the current display value
       setPrevValue(display);
@@ -252,6 +258,10 @@ const Calculator: React.FC = () => {
       saveToHistory();
     }
 
+    // Set the current history length as the last clear index
+    // This allows undo to only go back to this point
+    setLastClearIndex(history.length);
+
     setDisplay('0');
     setPrevValue(null);
     setCurrentOperation(null);
@@ -287,7 +297,7 @@ const Calculator: React.FC = () => {
     
     // Fifth row
     { value: '0', type: 'number' as const, onClick: () => appendValue('0') },
-    { value: '.', type: 'decimal' as const, onClick: appendDecimal, icon: <CircleDot size={18} /> },
+    { value: '.', type: 'decimal' as const, onClick: appendDecimal, icon: <Circle size={16} /> },
     { value: '=', type: 'equals' as const, onClick: handleEquals, icon: <Equal size={24} /> },
     { value: '+', type: 'operation' as const, onClick: () => handleOperation('+'), icon: <Plus size={24} /> },
   ];
