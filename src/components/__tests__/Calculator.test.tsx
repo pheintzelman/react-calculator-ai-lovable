@@ -11,6 +11,7 @@ describe('Calculator Component', () => {
 
   test('renders the calculator component', () => {
     expect(screen.getByText('Clear')).toBeInTheDocument();
+    expect(screen.getByText('Undo')).toBeInTheDocument();
   });
 
   test('displays the number when a digit is clicked', () => {
@@ -139,4 +140,65 @@ describe('Calculator Component', () => {
     fireEvent.keyDown(document, { key: 'Escape' });
     expect(screen.getByText('0')).toBeInTheDocument();
   });
-});
+
+  test('clears with Delete key', () => {
+    fireEvent.keyDown(document, { key: '9' });
+    fireEvent.keyDown(document, { key: 'Delete' });
+    expect(screen.getByText('0')).toBeInTheDocument();
+  });
+
+  test('clears with Backspace key', () => {
+    fireEvent.keyDown(document, { key: '9' });
+    fireEvent.keyDown(document, { key: 'Backspace' });
+    expect(screen.getByText('0')).toBeInTheDocument();
+  });
+  
+  test('supports undo operation', () => {
+    // Perform a calculation
+    fireEvent.click(screen.getByText('5'));
+    fireEvent.click(screen.getByLabelText('+'));
+    fireEvent.click(screen.getByText('3'));
+    fireEvent.click(screen.getByLabelText('='));
+    expect(screen.getByText('8')).toBeInTheDocument();
+    
+    // Undo the calculation
+    fireEvent.click(screen.getByText('Undo'));
+    
+    // Should show the state before the equals was pressed
+    expect(screen.getByText('3')).toBeInTheDocument();
+  });
+  
+  test('supports Control+Z for undo', () => {
+    // Perform a calculation
+    fireEvent.click(screen.getByText('7'));
+    fireEvent.click(screen.getByLabelText('-'));
+    fireEvent.click(screen.getByText('2'));
+    fireEvent.click(screen.getByLabelText('='));
+    expect(screen.getByText('5')).toBeInTheDocument();
+    
+    // Undo with Ctrl+Z
+    fireEvent.keyDown(document, { key: 'z', ctrlKey: true });
+    
+    // Should show the state before the equals was pressed
+    expect(screen.getByText('2')).toBeInTheDocument();
+  });
+  
+  test('supports negative number input', () => {
+    // Press minus for negative input
+    fireEvent.click(screen.getByLabelText('-'));
+    fireEvent.click(screen.getByText('5'));
+    expect(screen.getByText('-5')).toBeInTheDocument();
+    
+    // Press minus again to switch to positive
+    fireEvent.click(screen.getByLabelText('-'));
+    expect(screen.getByText('5')).toBeInTheDocument();
+  });
+  
+  test('supports negative number in operation', () => {
+    fireEvent.click(screen.getByText('8'));
+    fireEvent.click(screen.getByLabelText('+'));
+    fireEvent.click(screen.getByLabelText('-'));
+    fireEvent.click(screen.getByText('3'));
+    fireEvent.click(screen.getByLabelText('='));
+    expect(screen.getByText('5')).toBeInTheDocument();
+  });

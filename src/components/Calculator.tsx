@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import CalculatorButton from './CalculatorButton';
-import { Plus, Minus, X, Divide, Equal, CircleDot } from 'lucide-react';
+import { Plus, Minus, X, Divide, Equal, CircleDot, Undo2 } from 'lucide-react';
 
 const Calculator: React.FC = () => {
   const [display, setDisplay] = useState('0');
@@ -11,12 +11,50 @@ const Calculator: React.FC = () => {
   const [lastResult, setLastResult] = useState<string | null>(null);
   const [operationHistory, setOperationHistory] = useState<string>('');
   const [waitingForNextInput, setWaitingForNextInput] = useState(false);
+  const [history, setHistory] = useState<{
+    display: string;
+    prevValue: string | null;
+    currentOperation: string | null;
+    operationHistory: string;
+    lastResult: string | null;
+  }[]>([]);
+
+  const saveToHistory = () => {
+    setHistory([
+      ...history, 
+      {
+        display,
+        prevValue,
+        currentOperation,
+        operationHistory,
+        lastResult
+      }
+    ]);
+  };
+
+  const handleUndo = () => {
+    if (history.length > 0) {
+      const lastState = history[history.length - 1];
+      setDisplay(lastState.display);
+      setPrevValue(lastState.prevValue);
+      setCurrentOperation(lastState.currentOperation);
+      setOperationHistory(lastState.operationHistory);
+      setLastResult(lastState.lastResult);
+      setHistory(history.slice(0, -1));
+    }
+  };
 
   // Handle keyboard events
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
       const key = event.key;
       
+      // Check for Control+Z
+      if (key === 'z' && event.ctrlKey) {
+        handleUndo();
+        return;
+      }
+
       // Number keys (0-9)
       if (/^[0-9]$/.test(key)) {
         appendValue(key);
@@ -46,6 +84,10 @@ const Calculator: React.FC = () => {
       else if (key === 'Escape') {
         handleClear();
       }
+      // Delete key to clear
+      else if (key === 'Delete' || key === 'Backspace') {
+        handleClear();
+      }
     };
 
     // Add event listener
@@ -55,7 +97,7 @@ const Calculator: React.FC = () => {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [display, prevValue, currentOperation, resetDisplay]); // Include dependencies
+  }, [display, prevValue, currentOperation, resetDisplay, history]); // Include dependencies
 
   const appendValue = (value: string) => {
     if (resetDisplay || display === '0') {
@@ -80,7 +122,33 @@ const Calculator: React.FC = () => {
     }
   };
 
+  const handleNegative = () => {
+    // If we're expecting a new number input (after an operation)
+    if (waitingForNextInput || resetDisplay) {
+      setDisplay('-');
+      setResetDisplay(false);
+      setWaitingForNextInput(false);
+      return;
+    }
+
+    // Toggle between negative and positive
+    if (display.startsWith('-')) {
+      setDisplay(display.substring(1));
+    } else {
+      setDisplay('-' + display);
+    }
+  };
+
   const handleOperation = (operation: string) => {
+    // Save current state before operation
+    saveToHistory();
+
+    // Check for special minus case for negative numbers
+    if (operation === '-' && (display === '0' || waitingForNextInput)) {
+      handleNegative();
+      return;
+    }
+  
     // If we have a pending operation, perform it first
     if (prevValue && currentOperation && !waitingForNextInput) {
       // Update operation history
@@ -158,6 +226,9 @@ const Calculator: React.FC = () => {
   };
 
   const handleEquals = () => {
+    // Save current state before equals
+    saveToHistory();
+
     if (prevValue && currentOperation) {
       // Update operation history to show the complete calculation
       setOperationHistory(operationHistory + display + ' =');
@@ -176,6 +247,11 @@ const Calculator: React.FC = () => {
   };
 
   const handleClear = () => {
+    // Save current state before clearing
+    if (display !== '0') {
+      saveToHistory();
+    }
+
     setDisplay('0');
     setPrevValue(null);
     setCurrentOperation(null);
@@ -187,8 +263,9 @@ const Calculator: React.FC = () => {
 
   // Updated buttons layout to match the image
   const buttons = [
-    // First row - Clear button takes full width
-    { value: 'Clear', type: 'clear' as const, onClick: handleClear, className: 'col-span-4' },
+    // First row - Clear button and Undo
+    { value: 'Clear', type: 'clear' as const, onClick: handleClear, className: 'col-span-3' },
+    { value: 'Undo', type: 'undo' as const, onClick: handleUndo, icon: <Undo2 size={24} /> },
     
     // Second row
     { value: '7', type: 'number' as const, onClick: () => appendValue('7') },
