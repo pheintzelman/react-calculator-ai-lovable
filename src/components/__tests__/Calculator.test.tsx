@@ -1,6 +1,7 @@
 
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import Calculator from '../Calculator';
 
 describe('Calculator Component', () => {
@@ -111,5 +112,31 @@ describe('Calculator Component', () => {
     
     // The result should be "Error"
     expect(screen.getByText('Error')).toBeInTheDocument();
+  });
+  
+  test('responds to number keyboard inputs', () => {
+    // Simulate keyboard press for '5'
+    fireEvent.keyDown(document, { key: '5' });
+    expect(screen.getByText('5')).toBeInTheDocument();
+  });
+  
+  test('responds to decimal point keyboard input', () => {
+    fireEvent.keyDown(document, { key: '1' });
+    fireEvent.keyDown(document, { key: '.' });
+    expect(screen.getByText('1.')).toBeInTheDocument();
+  });
+  
+  test('responds to operation keyboard inputs', () => {
+    fireEvent.keyDown(document, { key: '7' });
+    fireEvent.keyDown(document, { key: '+' });
+    fireEvent.keyDown(document, { key: '3' });
+    fireEvent.keyDown(document, { key: 'Enter' });
+    expect(screen.getByText('10')).toBeInTheDocument();
+  });
+  
+  test('clears with Escape key', () => {
+    fireEvent.keyDown(document, { key: '9' });
+    fireEvent.keyDown(document, { key: 'Escape' });
+    expect(screen.getByText('0')).toBeInTheDocument();
   });
 });

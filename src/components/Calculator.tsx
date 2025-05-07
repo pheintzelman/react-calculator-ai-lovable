@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import CalculatorButton from './CalculatorButton';
 import { Plus, Minus, X, Divide, Equal, CircleDot } from 'lucide-react';
 
@@ -11,6 +11,51 @@ const Calculator: React.FC = () => {
   const [lastResult, setLastResult] = useState<string | null>(null);
   const [operationHistory, setOperationHistory] = useState<string>('');
   const [waitingForNextInput, setWaitingForNextInput] = useState(false);
+
+  // Handle keyboard events
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      const key = event.key;
+      
+      // Number keys (0-9)
+      if (/^[0-9]$/.test(key)) {
+        appendValue(key);
+      }
+      // Decimal point
+      else if (key === '.') {
+        appendDecimal();
+      }
+      // Operations
+      else if (key === '+') {
+        handleOperation('+');
+      }
+      else if (key === '-') {
+        handleOperation('-');
+      }
+      else if (key === '*' || key === 'x') {
+        handleOperation('×');
+      }
+      else if (key === '/') {
+        handleOperation('÷');
+      }
+      // Equals (Enter or =)
+      else if (key === '=' || key === 'Enter') {
+        handleEquals();
+      }
+      // Clear (Escape)
+      else if (key === 'Escape') {
+        handleClear();
+      }
+    };
+
+    // Add event listener
+    window.addEventListener('keydown', handleKeyDown);
+
+    // Clean up
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [display, prevValue, currentOperation, resetDisplay]); // Include dependencies
 
   const appendValue = (value: string) => {
     if (resetDisplay || display === '0') {
