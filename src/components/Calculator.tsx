@@ -18,7 +18,6 @@ const Calculator: React.FC = () => {
     operationHistory: string;
     lastResult: string | null;
   }[]>([]);
-  const [lastClearIndex, setLastClearIndex] = useState(0);
 
   const saveToHistory = () => {
     setHistory([
@@ -34,15 +33,15 @@ const Calculator: React.FC = () => {
   };
 
   const handleUndo = () => {
-    // Only go back to the last clear operation
-    if (history.length > lastClearIndex) {
-      const lastState = history[lastClearIndex];
+    // Undo the last button press by going back one step in history
+    if (history.length > 0) {
+      const lastState = history[history.length - 1];
       setDisplay(lastState.display);
       setPrevValue(lastState.prevValue);
       setCurrentOperation(lastState.currentOperation);
       setOperationHistory(lastState.operationHistory);
       setLastResult(lastState.lastResult);
-      setHistory(history.slice(0, lastClearIndex));
+      setHistory(history.slice(0, -1));
     }
   };
 
@@ -99,9 +98,12 @@ const Calculator: React.FC = () => {
     return () => {
       window.removeEventListener('keydown', handleKeyDown);
     };
-  }, [display, prevValue, currentOperation, resetDisplay, history, lastClearIndex]); // Include all dependencies
+  }, [display, prevValue, currentOperation, resetDisplay, history]); // Include all dependencies
 
   const appendValue = (value: string) => {
+    // Save state before modification
+    saveToHistory();
+    
     if (resetDisplay || display === '0') {
       setDisplay(value);
       setResetDisplay(false);
@@ -112,6 +114,9 @@ const Calculator: React.FC = () => {
   };
 
   const appendDecimal = () => {
+    // Save state before modification
+    saveToHistory();
+
     if (resetDisplay) {
       setDisplay('0.');
       setResetDisplay(false);
@@ -125,6 +130,9 @@ const Calculator: React.FC = () => {
   };
 
   const handleNegative = () => {
+    // Save state before toggling negative
+    saveToHistory();
+
     // If we're expecting a new number input (after an operation)
     if (waitingForNextInput || resetDisplay) {
       setDisplay('-');
@@ -257,10 +265,6 @@ const Calculator: React.FC = () => {
     if (display !== '0') {
       saveToHistory();
     }
-
-    // Set the current history length as the last clear index
-    // This allows undo to only go back to this point
-    setLastClearIndex(history.length);
 
     setDisplay('0');
     setPrevValue(null);
