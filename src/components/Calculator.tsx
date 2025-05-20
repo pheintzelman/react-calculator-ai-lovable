@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import CalculatorButton from './CalculatorButton';
 import { Plus, Minus, X, Divide, Equal, Circle, Undo2 } from 'lucide-react';
@@ -306,13 +305,15 @@ const Calculator: React.FC = () => {
     { value: '+', type: 'operation' as const, onClick: () => handleOperation('+'), icon: <Plus size={24} /> },
   ];
 
-  // Format the display for better readability
+  // Format the display for better readability, but preserve trailing decimal point
   const displayValue = display === 'Error' 
     ? display 
-    : new Intl.NumberFormat('en-US', { 
-        maximumFractionDigits: 20,
-        useGrouping: true
-      }).format(Number(display) || 0);
+    : display.endsWith('.') 
+      ? display // Keep the exact string if it ends with a decimal
+      : new Intl.NumberFormat('en-US', { 
+          maximumFractionDigits: 20,
+          useGrouping: true
+        }).format(Number(display) || 0);
 
   return (
     <div className="bg-gray-100 rounded-lg shadow-lg overflow-hidden max-w-xs w-full mx-auto border border-gray-300">

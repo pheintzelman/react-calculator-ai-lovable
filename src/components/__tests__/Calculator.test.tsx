@@ -202,4 +202,23 @@ describe('Calculator Component', () => {
     fireEvent.click(screen.getByLabelText('='));
     expect(screen.getByText('5')).toBeInTheDocument();
   });
+
+  // New test for decimal point after zero
+  test('appends decimal point to zero correctly', () => {
+    // Clear calculator to ensure we start with 0
+    fireEvent.click(screen.getByText('Clear'));
+    // Press .
+    fireEvent.click(screen.getByLabelText('.'));
+    // The display should be "0."
+    expect(screen.getByText('0.')).toBeInTheDocument();
+  });
+
+  // New test for decimal point after a number
+  test('appends decimal point to a number correctly', () => {
+    // Press 2 then .
+    fireEvent.click(screen.getByText('2'));
+    fireEvent.click(screen.getByLabelText('.'));
+    // The display should be "2."
+    expect(screen.getByText('2.')).toBeInTheDocument();
+  });
 });
