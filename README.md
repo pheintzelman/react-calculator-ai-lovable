@@ -3,9 +3,7 @@
 
 ## Demo
 
-Try out the calculator app: [Live Demo](https://your-username.github.io/snappy-screen-calc-app/)
-
-*Note: Replace "your-username" with your actual GitHub username after deploying.*
+Try out the calculator app: [Live Demo](https://pheintzelman.github.io/react-calculator-ai-lovable/)
 
 ## Project info
 

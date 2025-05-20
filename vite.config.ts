@@ -10,7 +10,7 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
   },
-  base: './',
+  base: '/react-calculator-ai-lovable/',
   plugins: [
     react(),
     mode === 'development' &&
