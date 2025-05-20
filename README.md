@@ -1,4 +1,11 @@
+
 # Welcome to your Lovable project
+
+## Demo
+
+Try out the calculator app: [Live Demo](https://your-username.github.io/snappy-screen-calc-app/)
+
+*Note: Replace "your-username" with your actual GitHub username after deploying.*
 
 ## Project info
 
@@ -63,6 +70,8 @@ This project is built with:
 ## How can I deploy this project?
 
 Simply open [Lovable](https://lovable.dev/projects/8d832b88-3fa8-40e3-b284-be66c9f052d4) and click on Share -> Publish.
+
+You can also deploy to GitHub Pages by pushing to the main branch of your repository.
 
 ## Can I connect a custom domain to my Lovable project?
 
