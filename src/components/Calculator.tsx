@@ -1,6 +1,7 @@
+
 import React, { useState, useEffect } from 'react';
 import CalculatorButton from './CalculatorButton';
-import { Plus, Minus, X, Divide, Equal, Circle, Undo2 } from 'lucide-react';
+import { Plus, Minus, X, Divide, Equal, Undo2 } from 'lucide-react';
 
 const Calculator: React.FC = () => {
   const [display, setDisplay] = useState('0');
@@ -300,7 +301,7 @@ const Calculator: React.FC = () => {
     
     // Fifth row
     { value: '0', type: 'number' as const, onClick: () => appendValue('0') },
-    { value: '.', type: 'decimal' as const, onClick: appendDecimal, icon: <Circle size={16} /> },
+    { value: '.', type: 'decimal' as const, onClick: appendDecimal },
     { value: '=', type: 'equals' as const, onClick: handleEquals, icon: <Equal size={24} /> },
     { value: '+', type: 'operation' as const, onClick: () => handleOperation('+'), icon: <Plus size={24} /> },
   ];
