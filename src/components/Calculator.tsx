@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import CalculatorButton from './CalculatorButton';
 import { Plus, Minus, X, Divide, Equal, Undo2 } from 'lucide-react';
@@ -143,58 +142,40 @@ const Calculator: React.FC = () => {
     }
   };
 
-  const handleNegative = () => {
-    // Save state before toggling negative
-    saveToHistory();
-
-    // If display is "0", show "-"
-    if (display === '0') {
-      setDisplay('-');
-      setResetDisplay(false);
-      setWaitingForNextInput(false);
-      return;
-    }
-
-    // If display is "-", show "0"
-    if (display === '-') {
-      setDisplay('0');
-      setResetDisplay(false);
-      setWaitingForNextInput(false);
-      return;
-    }
-
-    // If we're expecting a new number input (after an operation)
-    if (waitingForNextInput || resetDisplay) {
-      setDisplay('-');
-      setResetDisplay(false);
-      setWaitingForNextInput(false);
-      return;
-    }
-
-    // Toggle between negative and positive for existing numbers
-    if (display.startsWith('-')) {
-      setDisplay(display.substring(1));
-    } else {
-      setDisplay('-' + display);
-    }
-  };
-
   const handleOperation = (operation: string) => {
     // Save current state before operation
     saveToHistory();
 
-    // Check for special minus case for negative numbers
+    // Special handling for minus operation
     if (operation === '-') {
-      // If display is just "-" and an operation is pressed, do nothing
-      if (display === '-') {
+      // If display is "0", show "-"
+      if (display === '0') {
+        setDisplay('-');
+        setResetDisplay(false);
+        setWaitingForNextInput(false);
         return;
       }
       
-      // If display is "0" or we're waiting for next input, handle as negative
-      if (display === '0' || waitingForNextInput) {
-        handleNegative();
+      // If display is "-", show "0"
+      if (display === '-') {
+        setDisplay('0');
+        setResetDisplay(false);
+        setWaitingForNextInput(false);
         return;
       }
+      
+      // If we're waiting for next input (after an operation), handle as negative
+      if (waitingForNextInput || resetDisplay) {
+        setDisplay('-');
+        setResetDisplay(false);
+        setWaitingForNextInput(false);
+        return;
+      }
+    }
+
+    // If display is just "-" and a non-minus operation is pressed, do nothing
+    if (display === '-' && operation !== '-') {
+      return;
     }
   
     // If we have a pending operation, perform it first
