@@ -221,4 +221,79 @@ describe('Calculator Component', () => {
     // The display should be "2."
     expect(screen.getByText('2.')).toBeInTheDocument();
   });
+
+  // NEW TESTS FOR NEGATIVE SIGN FUNCTIONALITY
+  
+  test('displays "-" when pressing minus on "0"', () => {
+    // Calculator starts with "0"
+    fireEvent.click(screen.getByLabelText('-'));
+    expect(screen.getByText('-')).toBeInTheDocument();
+  });
+
+  test('displays "0" when pressing minus on "-"', () => {
+    // First press minus to get "-"
+    fireEvent.click(screen.getByLabelText('-'));
+    expect(screen.getByText('-')).toBeInTheDocument();
+    
+    // Press minus again to get "0"
+    fireEvent.click(screen.getByLabelText('-'));
+    expect(screen.getByText('0')).toBeInTheDocument();
+  });
+
+  test('does nothing when pressing operation on "-"', () => {
+    // First press minus to get "-"
+    fireEvent.click(screen.getByLabelText('-'));
+    expect(screen.getByText('-')).toBeInTheDocument();
+    
+    // Press plus operation - should do nothing
+    fireEvent.click(screen.getByLabelText('+'));
+    expect(screen.getByText('-')).toBeInTheDocument();
+    
+    // Press multiply operation - should do nothing
+    fireEvent.click(screen.getByLabelText('×'));
+    expect(screen.getByText('-')).toBeInTheDocument();
+    
+    // Press divide operation - should do nothing
+    fireEvent.click(screen.getByLabelText('÷'));
+    expect(screen.getByText('-')).toBeInTheDocument();
+  });
+
+  test('allows number entry after "-"', () => {
+    // First press minus to get "-"
+    fireEvent.click(screen.getByLabelText('-'));
+    expect(screen.getByText('-')).toBeInTheDocument();
+    
+    // Press a number
+    fireEvent.click(screen.getByText('5'));
+    expect(screen.getByText('-5')).toBeInTheDocument();
+  });
+
+  test('allows decimal entry after "-"', () => {
+    // First press minus to get "-"
+    fireEvent.click(screen.getByLabelText('-'));
+    expect(screen.getByText('-')).toBeInTheDocument();
+    
+    // Press decimal point
+    fireEvent.click(screen.getByLabelText('.'));
+    expect(screen.getByText('-0.')).toBeInTheDocument();
+  });
+
+  test('maintains existing subtraction functionality', () => {
+    // Test 3 - 2 = 1
+    fireEvent.click(screen.getByText('3'));
+    fireEvent.click(screen.getByLabelText('-'));
+    fireEvent.click(screen.getByText('2'));
+    fireEvent.click(screen.getByLabelText('='));
+    expect(screen.getByText('1')).toBeInTheDocument();
+  });
+
+  test('handles negative number in middle of calculation', () => {
+    // Test 5 + (-3) = 2
+    fireEvent.click(screen.getByText('5'));
+    fireEvent.click(screen.getByLabelText('+'));
+    fireEvent.click(screen.getByLabelText('-')); // Should show "-"
+    fireEvent.click(screen.getByText('3')); // Should show "-3"
+    fireEvent.click(screen.getByLabelText('='));
+    expect(screen.getByText('2')).toBeInTheDocument();
+  });
 });

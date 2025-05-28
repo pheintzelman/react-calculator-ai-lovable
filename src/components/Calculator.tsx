@@ -104,6 +104,13 @@ const Calculator: React.FC = () => {
     // Save state before modification
     saveToHistory();
     
+    // If display is just "-", append the number to it
+    if (display === '-') {
+      setDisplay('-' + value);
+      setWaitingForNextInput(false);
+      return;
+    }
+    
     if (resetDisplay || display === '0') {
       setDisplay(value);
       setResetDisplay(false);
@@ -116,6 +123,13 @@ const Calculator: React.FC = () => {
   const appendDecimal = () => {
     // Save state before modification
     saveToHistory();
+
+    // If display is just "-", make it "-0."
+    if (display === '-') {
+      setDisplay('-0.');
+      setWaitingForNextInput(false);
+      return;
+    }
 
     if (resetDisplay) {
       setDisplay('0.');
@@ -133,6 +147,22 @@ const Calculator: React.FC = () => {
     // Save state before toggling negative
     saveToHistory();
 
+    // If display is "0", show "-"
+    if (display === '0') {
+      setDisplay('-');
+      setResetDisplay(false);
+      setWaitingForNextInput(false);
+      return;
+    }
+
+    // If display is "-", show "0"
+    if (display === '-') {
+      setDisplay('0');
+      setResetDisplay(false);
+      setWaitingForNextInput(false);
+      return;
+    }
+
     // If we're expecting a new number input (after an operation)
     if (waitingForNextInput || resetDisplay) {
       setDisplay('-');
@@ -141,7 +171,7 @@ const Calculator: React.FC = () => {
       return;
     }
 
-    // Toggle between negative and positive
+    // Toggle between negative and positive for existing numbers
     if (display.startsWith('-')) {
       setDisplay(display.substring(1));
     } else {
@@ -154,9 +184,17 @@ const Calculator: React.FC = () => {
     saveToHistory();
 
     // Check for special minus case for negative numbers
-    if (operation === '-' && (display === '0' || waitingForNextInput)) {
-      handleNegative();
-      return;
+    if (operation === '-') {
+      // If display is just "-" and an operation is pressed, do nothing
+      if (display === '-') {
+        return;
+      }
+      
+      // If display is "0" or we're waiting for next input, handle as negative
+      if (display === '0' || waitingForNextInput) {
+        handleNegative();
+        return;
+      }
     }
   
     // If we have a pending operation, perform it first
