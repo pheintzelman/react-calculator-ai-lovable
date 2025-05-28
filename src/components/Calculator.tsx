@@ -146,9 +146,9 @@ const Calculator: React.FC = () => {
     // Save current state before operation
     saveToHistory();
 
-    // Special handling for minus operation
+    // Special handling for minus operation to support negative numbers
     if (operation === '-') {
-      // If display is "0", show "-"
+      // Case 1: Display is "0" - change to "-"
       if (display === '0') {
         setDisplay('-');
         setResetDisplay(false);
@@ -156,7 +156,7 @@ const Calculator: React.FC = () => {
         return;
       }
       
-      // If display is "-", show "0"
+      // Case 2: Display is "-" - change back to "0"
       if (display === '-') {
         setDisplay('0');
         setResetDisplay(false);
@@ -164,7 +164,7 @@ const Calculator: React.FC = () => {
         return;
       }
       
-      // If we're waiting for next input (after an operation), handle as negative
+      // Case 3: After an operation (waiting for next input) - show "-" for negative input
       if (waitingForNextInput || resetDisplay) {
         setDisplay('-');
         setResetDisplay(false);
@@ -330,10 +330,12 @@ const Calculator: React.FC = () => {
     ? display 
     : display.endsWith('.') 
       ? display // Keep the exact string if it ends with a decimal
-      : new Intl.NumberFormat('en-US', { 
-          maximumFractionDigits: 20,
-          useGrouping: true
-        }).format(Number(display) || 0);
+      : display === '-'
+        ? '-' // Keep the minus sign as is
+        : new Intl.NumberFormat('en-US', { 
+            maximumFractionDigits: 20,
+            useGrouping: true
+          }).format(Number(display) || 0);
 
   return (
     <div className="bg-gray-100 rounded-lg shadow-lg overflow-hidden max-w-xs w-full mx-auto border border-gray-300">
